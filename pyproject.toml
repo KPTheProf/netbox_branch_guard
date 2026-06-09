@@ -7,7 +7,7 @@ build-backend = "setuptools.build_meta"
 name = "netbox-branch-guard"
 dynamic = ["version"]
 
-description = "Branch enforcement middleware for NetBox"
+description = "Guards against writes to the main branch and enforces branch usage"
 readme = { file = "README.md", content-type = "text/markdown" }
 authors = [{ name = "KPTheProf" }]
 license = { file = "LICENSE" }
@@ -22,9 +22,9 @@ keywords = ["netbox", "django", "plugin", "branching", "middleware"]
 
 
 [project.urls]
-Homepage = "https://github.com/KPTheProf/netbox-branch-guard"
-Source = "https://github.com/KPTheProf/netbox-branch-guard"
-Issues = "https://github.com/KPTheProf/netbox-branch-guard/issues"
+Homepage = "https://github.com/KPTheProf/netbox_branch_guard"
+Source = "https://github.com/KPTheProf/netbox_branch_guard"
+Issues = "https://github.com/KPTheProf/netbox_branch_guard/issues"
 
 
 # ✅ This activates setuptools-scm
