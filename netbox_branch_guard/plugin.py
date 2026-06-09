@@ -1,6 +1,6 @@
 from netbox.plugins import PluginConfig
 from django.conf import settings
-from _version import __version__
+from ._version import __version__
 
 
 class NetboxBranchGuardConfig(PluginConfig):
