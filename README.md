@@ -55,8 +55,8 @@ Create plugins.py to store the plugin's configuration.
 
 2) Add netbox_branch_guard to PLUGINS and PLUGINS_CONFIG in plugins.py
 
-[!IMPORTANT]
-netbox-branching _must_ come last
+>[!IMPORTANT]
+>netbox-branching _must_ come last
 
 ```python
 PLUGINS = [
