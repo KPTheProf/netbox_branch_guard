@@ -8,9 +8,10 @@ name = "netbox-branch-guard"
 dynamic = ["version"]
 
 description = "Guards against writes to the main branch and enforces branch usage"
-readme = { file = "README.md", content-type = "text/markdown" }
 authors = [{ name = "KPTheProf" }]
+homepage = "https://github.com/KPTheProf/netbox_branch_guard"
 license = { file = "LICENSE" }
+readme = { file = "README.md", content-type = "text/markdown" }
 
 requires-python = ">=3.8"
 
@@ -20,11 +21,6 @@ dependencies = [
 
 keywords = ["netbox", "django", "plugin", "branching", "middleware"]
 
-
-[project.urls]
-Homepage = "https://github.com/KPTheProf/netbox_branch_guard"
-Source = "https://github.com/KPTheProf/netbox_branch_guard"
-Issues = "https://github.com/KPTheProf/netbox_branch_guard/issues"
 
 
 # ✅ This activates setuptools-scm
