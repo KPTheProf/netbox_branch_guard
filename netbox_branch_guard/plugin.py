@@ -9,7 +9,7 @@ class NetboxBranchGuardConfig(PluginConfig):
     version = "0.1.0"
     author = "KPTheProf"
     base_url = "netbox-branch-guard"
-    URL = https://github.com/KPTheProf/netbox_branch_guard
+    url = "https://github.com/KPTheProf/netbox_branch_guard"
 
     def ready(self):
         middleware_path = "netbox_branch_guard.middleware.NetboxBranchGuardMiddleware"
