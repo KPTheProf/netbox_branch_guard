@@ -40,7 +40,6 @@ include = ["netbox_branch_guard*"]
 
 # Optional: include files from MANIFEST.in if you add one later
 [tool.setuptools]
-url = "https://github.com/KPTheProf/netbox_branch_guard"
 include-package-data = true
 
 
