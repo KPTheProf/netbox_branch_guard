@@ -23,34 +23,35 @@ keywords = ["netbox", "django", "plugin", "branching", "middleware"]
 
 
 
-# ✅ This activates setuptools-scm
+# This activates setuptools-scm
 [tool.setuptools_scm]
 version_scheme = "no-guess-dev"
 local_scheme = "no-local-version"
 
 
-# ✅ Automatically find packages
+# Automatically find packages
 [tool.setuptools.packages.find]
 include = ["netbox_branch_guard*"]
 
 
-# ✅ Include non-Python files (if needed)
+# Include non-Python files (if needed)
 [tool.setuptools.package-data]
 "netbox_branch_guard" = ["templates/**/*", "static/**/*"]
 
 
-# ✅ Optional: include files from MANIFEST.in if you add one later
+# Optional: include files from MANIFEST.in if you add one later
 [tool.setuptools]
+url = "https://github.com/KPTheProf/netbox_branch_guard"
 include-package-data = true
 
 
-# ✅ Optional uv config (helps with consistency, not required)
+# Optional uv config (helps with consistency, not required)
 [tool.uv]
 # Ensures reproducible builds (optional but nice)
 managed = true
 
 
-# ✅ Optional dependency groups (for development)
+# Optional dependency groups (for development)
 [project.optional-dependencies]
 dev = [
     "pytest",
