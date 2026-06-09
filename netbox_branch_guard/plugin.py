@@ -1,13 +1,19 @@
 from netbox.plugins import PluginConfig
 from django.conf import settings
-from ._version import __version__
+from importlib.metadata import version, PackageNotFoundError
+
 
 
 class NetboxBranchGuardConfig(PluginConfig):
     name = "netbox_branch_guard"
     verbose_name = "Netbox Branch Guard"
     description = "Guards against writes to the Main branch and enforces branch usage"
-    version = __version__
+
+    try:
+        __version__ = version("netbox-branch-guard")
+    except PackageNotFoundError:
+        __version__ = "0.0.0"
+
     author = "KPTheProf"
     base_url = "netbox-branch-guard"
     url = "https://github.com/KPTheProf/netbox_branch_guard"

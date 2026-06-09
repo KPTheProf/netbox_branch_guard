@@ -217,6 +217,3 @@ __marimo__/
 # Streamlit
 .streamlit/secrets.toml
 
-# Ignore dynamically created _version.py
-_version.py
-

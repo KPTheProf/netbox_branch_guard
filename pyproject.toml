@@ -31,7 +31,6 @@ Issues = "https://github.com/KPTheProf/netbox-branch-guard/issues"
 [tool.setuptools_scm]
 version_scheme = "no-guess-dev"
 local_scheme = "no-local-version"
-write_to = "netbox_branch_guard/_version.py"
 
 
 # ✅ Automatically find packages
