@@ -21,6 +21,10 @@ dependencies = [
 keywords = ["netbox", "django", "plugin", "branching", "middleware"]
 
 
+[project.urls]
+Homepage = "https://github.com/KPTheProf/netbox_branch_guard"
+Source = "https://github.com/KPTheProf/netbox_branch_guard"
+
 
 # This activates setuptools-scm
 [tool.setuptools_scm]
