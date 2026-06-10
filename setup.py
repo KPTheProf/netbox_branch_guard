@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 from pathlib import Path
 
 about = {}
-exec((Path(__file__).parent / "mypackage" / "_version.py").read_text(), about)
+exec((Path(__file__).parent / "netbox_branch_guard" / "_version.py").read_text(), about)
 
 setup(
     name="netbox_branch_guard",
