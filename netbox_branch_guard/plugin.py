@@ -6,12 +6,7 @@ class NetboxBranchGuardConfig(PluginConfig):
     name = "netbox_branch_guard"
     verbose_name = "Netbox Branch Guard"
     description = "Guards against writes to the Main branch and enforces branch usage"
-
-    try:
-        __version__ = version("netbox-branch-guard")
-    except PackageNotFoundError:
-        __version__ = "0.0.0"
-
+    version = __version__
     base_url = "netbox-branch-guard"
 
     def ready(self):
