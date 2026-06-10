@@ -9,7 +9,15 @@ class NetboxBranchGuardConfig(PluginConfig):
     verbose_name = "Netbox Branch Guard"
     description = "Guards against writes to the Main branch and enforces branch usage"
     version = __version__
+    author = "KPTheProf"
     base_url = "netbox-branch-guard"
+
+    min_version = "4.6.0"  # or whatever NetBox version you support
+
+    # IMPORTANT: this populates the UI fields
+    source = "https://github.com/KPTheProf/netbox_branch_guard"
+    license = "Apache 2.0"
+
 
     def ready(self):
         middleware_path = "netbox_branch_guard.middleware.NetboxBranchGuardMiddleware"
