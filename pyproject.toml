@@ -27,9 +27,14 @@ Homepage = "https://github.com/KPTheProf/netbox_branch_guard"
 Source = "https://github.com/KPTheProf/netbox_branch_guard"
 
 
-# Get the version number from __init__
-[tool.setuptools.dynamic]
-version = {attr = "netbox_branch_guard.__version__"}
+# Use git tags for version numbering
+[tool.setuptools.version]
+source = "vcs"
+
+
+# Create the _version.py file
+[tool.setuptools.build.hooks.vcs]
+version-file = "netbox_branch_guard/_version.py"
 
 
 # Automatically find packages
