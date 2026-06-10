@@ -4,6 +4,7 @@ from importlib.metadata import version, PackageNotFoundError
 try:
     from ._version import __version__
 except ImportError:
+    
 
 
 class NetboxBranchGuardConfig(PluginConfig):
