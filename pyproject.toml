@@ -30,7 +30,7 @@ Source = "https://github.com/KPTheProf/netbox_branch_guard"
 # Use git tags for version numbering
 # Create the _version.py file
 [tool.setuptools_scm]
-write-to = "netbox_branch_guard/_version.py"
+write_to = "netbox_branch_guard/_version.py"
 
 
 # Automatically find packages
