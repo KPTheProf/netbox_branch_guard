@@ -15,6 +15,7 @@ class NetboxBranchGuardConfig(PluginConfig):
     version = __version__
     author = "KPTheProf"
     homepage = "https://github.com/KPTheProf/netbox_branch_guard"
+    license = "Apache-2.0"
 
     base_url = "netbox-branch-guard"
 
