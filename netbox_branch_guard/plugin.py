@@ -1,10 +1,7 @@
 from netbox.plugins import PluginConfig
 from django.conf import settings
 from importlib.metadata import version, PackageNotFoundError
-try:
-    from ._version import __version__
-except ImportError:
-    
+from ._version import __version__
 
 
 class NetboxBranchGuardConfig(PluginConfig):
