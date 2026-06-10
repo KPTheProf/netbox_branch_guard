@@ -28,13 +28,9 @@ Source = "https://github.com/KPTheProf/netbox_branch_guard"
 
 
 # Use git tags for version numbering
-[tool.setuptools.version]
-source = "vcs"
-
-
 # Create the _version.py file
-[tool.setuptools.build.hooks.vcs]
-version-file = "netbox_branch_guard/_version.py"
+[tool.setuptools_scm]
+write-to = "netbox_branch_guard/_version.py"
 
 
 # Automatically find packages
