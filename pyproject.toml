@@ -63,6 +63,11 @@ include-package-data = true
 managed = true
 
 
+# Add _verion.py as a dependicy in the build
+[tool.uv.extra-build-dependencies]
+netbox_branch_guard = ["_version"]
+
+
 # Optional dependency groups (for development)
 [project.optional-dependencies]
 dev = [
