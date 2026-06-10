@@ -1,4 +1,5 @@
 from setuptools import setup, find_packages
+from netbox_branch_guard import __version__
 
 setup(
     name="netbox_branch_guard",
