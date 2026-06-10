@@ -1,0 +1,4 @@
+include LICENSE
+include README.md
+recursive-include netbox_branch_guard *
+
