@@ -14,7 +14,10 @@ class NetboxBranchGuardConfig(PluginConfig):
     description = "Guards against writes to the Main branch and enforces branch usage"
     version = __version__
     author = "KPTheProf"
-    source = "https://github.com/KPTheProf/netbox_branch_guard"
+
+    # This is what NetBox actually uses internally
+    author_url = "https://github.com/KPTheProf/netbox_branch_guard"
+
     base_url = "netbox-branch-guard"
 
     min_version = "4.6.0"  # or whatever NetBox version you support
