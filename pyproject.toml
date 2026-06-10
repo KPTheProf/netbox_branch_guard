@@ -27,13 +27,6 @@ Homepage = "https://github.com/KPTheProf/netbox_branch_guard"
 Source = "https://github.com/KPTheProf/netbox_branch_guard"
 
 
-# Use git tags for version numbering
-# Create the _version.py file
-[tool.setuptools_scm]
-write_to = "netbox_branch_guard/_version.py"
-fallback_version = "0.0.dev0"
-
-
 # Automatically find packages
 [tool.setuptools.packages.find]
 include = ["netbox_branch_guard*"]
