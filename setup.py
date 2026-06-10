@@ -1,13 +1,10 @@
 from setuptools import setup, find_packages
-from pathlib import Path
-
-about = {}
-exec((Path(__file__).parent / "netbox_branch_guard" / "_version.py").read_text(), about)
+from setuptools_scm import get_version
 
 setup(
     name="netbox_branch_guard",
     description="Guards against writes to the Main branch and enforces branch usage",
-    version=about["__version__"],
+    version=get_version(),
     author="KPTheProf",
     url="https://github.com/KPTheProf/netbox_branch_guard",
     license="Apache License 2.0",
