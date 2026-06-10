@@ -7,6 +7,7 @@ build-backend = "setuptools.build_meta"
 name = "netbox-branch-guard"
 dynamic = ["version"]
 
+
 description = "Guards against writes to the main branch and enforces branch usage"
 authors = [{ name = "KPTheProf" }]
 license = { file = "LICENSE" }
@@ -26,20 +27,9 @@ Homepage = "https://github.com/KPTheProf/netbox_branch_guard"
 Source = "https://github.com/KPTheProf/netbox_branch_guard"
 
 
-# This activates setuptools-scm
-[tool.setuptools_scm]
-version_scheme = "no-guess-dev"
-local_scheme = "no-local-version"
-
-
-# Get the version number from vcs
-[tool.setuptools.version]
-source="vcs"
-
-
-# Create the _version.py file with the version details
-[tools.setuptools.build.hooks.vsc]
-version-file = "netbox_brach_guard/_version.py"
+# Get the version number from __init__
+[tool.setuptools.dynamic]
+version = {attr = "netbox_branch_guard.__version__"}
 
 
 # Automatically find packages
@@ -61,11 +51,6 @@ include-package-data = true
 [tool.uv]
 # Ensures reproducible builds (optional but nice)
 managed = true
-
-
-# Add _verion.py as a dependicy in the build
-[tool.uv.extra-build-dependencies]
-netbox_branch_guard = ["_version"]
 
 
 # Optional dependency groups (for development)
