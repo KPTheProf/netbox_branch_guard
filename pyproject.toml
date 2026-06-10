@@ -10,6 +10,7 @@ dynamic = ["version"]
 
 description = "Guards against writes to the main branch and enforces branch usage"
 authors = [{ name = "KPTheProf" }]
+license = "Apache-2.0"
 license-files = ["LICENSE"]
 readme = { file = "README.md", content-type = "text/markdown" }
 
@@ -24,7 +25,6 @@ keywords = ["netbox", "django", "plugin", "branching", "middleware"]
 
 [project.urls]
 Homepage = "https://github.com/KPTheProf/netbox_branch_guard"
-Source = "https://github.com/KPTheProf/netbox_branch_guard"
 
 
 # Automatically find packages
