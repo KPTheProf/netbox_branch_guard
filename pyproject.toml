@@ -32,6 +32,16 @@ version_scheme = "no-guess-dev"
 local_scheme = "no-local-version"
 
 
+# Get the version number from vcs
+[tool.setuptools.version]
+source="vcs"
+
+
+# Create the _version.py file with the version details
+[tools.setuptools.build.hooks.vsc]
+version-file = "netbox_brach_guard/_version.py"
+
+
 # Automatically find packages
 [tool.setuptools.packages.find]
 include = ["netbox_branch_guard*"]

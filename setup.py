@@ -1,9 +1,10 @@
 from setuptools import setup, find_packages
+from .netbox_branch_guard/_version import __version__
 
 setup(
     name="netbox_branch_guard",
     description="Guards against writes to the Main branch and enforces branch usage",
-    version=__version__
+    version=__version__,
     author="KPTheProf",
     url="https://github.com/KPTheProf/netbox_branch_guard",
     license="Apache License 2.0",
