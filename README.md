@@ -4,6 +4,8 @@ It can also be setup to enforce branch ownership checks and control which branch
 
 It is used in conjunction with the Netbox Branching plugin [Netbox Branching](https://github.com/netboxlabs/netbox-branching).
 
+## Compatibility
+ZZ
 ## Requirements
 - NetBox 4.x
 - Netbox-Branching plugin for branch operations
@@ -87,6 +89,7 @@ docker compose build --no-cache
 6. Start NetBox Docker
 docker compose up -d
 
+## Usage
 
 ### Permissions
 - If you are giving users the ability to create their own branches, then it's suggested to set "enforce_ownership"

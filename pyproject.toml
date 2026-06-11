@@ -6,6 +6,7 @@ authors = [
 	{name = "KPTheProf"},
 ]
 license = "Apache-2.0"
+license-files = ["LICENSE"]
 readme = "README.md"
 keywords = [
 	"netbox",
@@ -50,7 +51,6 @@ packages = [
 ]
 package-data = { "netbox_branch_guard" = ["**/*", "templates/**/*", "static/**/*"] }
 exclude-package-data = { "netbox_branch_guard" = ["tests/**/*"] }
-license-files = ["LICENSE"]
 
 
 [tool.setuptools_scm]
