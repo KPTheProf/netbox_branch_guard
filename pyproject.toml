@@ -1,44 +1,57 @@
+[project]
+name = "netbox-branch-guard"
+dynamic = ["version"]
+description = "Guards against writes to the main branch and enforces branch usage"
+authors = [
+	{name = "KPTheProf", email = ""},
+]
+license = "Apache-2.0"
+license-files = ["LICENSE"]
+readme = "README.md"
+keywords = ["netbox", "django", "plugin", "branching", "middleware"]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Framework :: Django",
+    "Natural Language :: English",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
+    "Intended Audience :: System Administrators",
+]
+dependencies = [
+    "django>=4.2",
+]
+requires-python = ">=3.12"
+
+
+[project.urls]
+Homepage = "https://github.com/KPTheProf/netbox_branch_guard"
+Documentation = "https://github.com/KPTheProf/netbox_branch_guard/blob/main/docs/using_netbox_dns.md"
+Repository = "https://github.com/KPTheProf/netbox_branch_guard"
+Issues = "https://github.com/KPTheProf/netbox_branch_guard/issues"
+
+
 [build-system]
 requires = ["setuptools>=68", "wheel", "setuptools-scm"]
 build-backend = "setuptools.build_meta"
 
 
-[project]
-name = "netbox-branch-guard"
-dynamic = ["version"]
-
-description = "Guards against writes to the main branch and enforces branch usage"
-authors = [{ name = "KPTheProf" }]
-license = "Apache-2.0"
-license-files = ["LICENSE"]
-readme = { file = "README.md", content-type = "text/markdown" }
-
-requires-python = ">=3.8"
-
-dependencies = [
-    "django>=4.2",
+# Optional: include files from MANIFEST.in if you add one later
+[tool.setuptools]
+packages = [
+	"netbox_branch_guard",
 ]
-
-keywords = ["netbox", "django", "plugin", "branching", "middleware"]
-
-
-[project.urls]
-Homepage = "https://github.com/KPTheProf/netbox_branch_guard"
+package-data = { "netbox_branch_guard" = ["**/*", "templates/**/*", "static/**/*"] }
+exclude-package-data = { "netbox_branch_guard" = ["tests/**/*"] }
 
 
 # Automatically find packages
 [tool.setuptools.packages.find]
+where = ["."]
 include = ["netbox_branch_guard*"]
-
-
-# Include non-Python files (if needed)
-[tool.setuptools.package-data]
-"netbox_branch_guard" = ["templates/**/*", "static/**/*"]
-
-
-# Optional: include files from MANIFEST.in if you add one later
-[tool.setuptools]
-include-package-data = true
+namespaces = false
 
 
 # Optional uv config (helps with consistency, not required)
