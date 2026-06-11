@@ -1,5 +1,4 @@
 include LICENSE
 include README.md
-include COMPATIBILITY.md
 recursive-include netbox_branch_guard *
 
