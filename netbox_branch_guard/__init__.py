@@ -14,22 +14,54 @@ class NetboxBranchGuardConfig(PluginConfig):
     description = "Guards against writes to the Main branch and enforces branch usage"
     version = __version__
     author = "KPTheProf"
-    homepage = "https://github.com/KPTheProf/netbox_branch_guard"
+    author_url = "https://github.com/KPTheProf/netbox_branch_guard"
     license = "Apache-2.0"
 
-    base_url = "netbox-branch-guard"
+    base_url = "branch-guard"
 
-    min_version = "4.6.0"  # or whatever NetBox version you support
+    min_version = "4.6.0"
+    max_version = "4.6.99"
+
+    middleware = (
+        "netbox_branch_guard.middleware.NetboxBranchGuardMiddleware",
+    )
+
+    default_settings = {
+        # plugin is enabled.
+        "enabled": True,
+
+        # API can write to Main.
+        "api_bypass": True,
+
+        # Superuser can write to Main.
+        "superuser_bypass": True,
+
+        # Users can only write to branches they own.
+        "enforce_ownership": True,
+
+        # Output detailed logging to the netbox log.
+        "logging": False,
+
+        # Valid levels are "debug", "info", "success", "warning", "error"
+        "log_level": "debug",
+
+        # Map user groups to their allowed branches
+        "group_branch_map": {},
+    }
 
 
 
     def ready(self):
+        super().ready()
+
         middleware_path = "netbox_branch_guard.middleware.NetboxBranchGuardMiddleware"
 
         if middleware_path in settings.MIDDLEWARE:
             return
 
-        # Find AuthenticationMiddleware
+        ### This middleware needs to be inserted after Auth + Message middleware.
+        ###  As Message is already after Auth, then this should suffice.
+        # Find MessageMiddleware
         try:
             index = settings.MIDDLEWARE.index(
                 "django.contrib.messages.middleware.MessageMiddleware"
@@ -39,7 +71,7 @@ class NetboxBranchGuardConfig(PluginConfig):
             settings.MIDDLEWARE.append(middleware_path)
             return
 
-        # Insert AFTER auth middleware
+        # Insert AFTER MessageMiddleware
         settings.MIDDLEWARE.insert(index + 1, middleware_path)
 
 config = NetboxBranchGuardConfig
