@@ -47,13 +47,6 @@ package-data = { "netbox_branch_guard" = ["**/*", "templates/**/*", "static/**/*
 exclude-package-data = { "netbox_branch_guard" = ["tests/**/*"] }
 
 
-# Automatically find packages
-[tool.setuptools.packages.find]
-where = ["."]
-include = ["netbox_branch_guard*"]
-namespaces = false
-
-
 # Optional uv config (helps with consistency, not required)
 [tool.uv]
 # Ensures reproducible builds (optional but nice)
