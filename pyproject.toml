@@ -1,3 +1,8 @@
+[build-system]
+requires = ["setuptools>=68", "wheel", "setuptools-scm"]
+build-backend = "setuptools.build_meta"
+
+
 [project]
 name = "netbox-branch-guard"
 dynamic = ["version"]
@@ -28,14 +33,9 @@ requires-python = ">=3.12"
 
 [project.urls]
 Homepage = "https://github.com/KPTheProf/netbox_branch_guard"
-Documentation = "https://github.com/KPTheProf/netbox_branch_guard/blob/main/docs/using_netbox_dns.md"
+# Documentation = "https://github.com/KPTheProf/netbox_branch_guard/blob/main/docs/using_netbox_dns.md"
 Repository = "https://github.com/KPTheProf/netbox_branch_guard"
 Issues = "https://github.com/KPTheProf/netbox_branch_guard/issues"
-
-
-[build-system]
-requires = ["setuptools>=68", "wheel", "setuptools-scm"]
-build-backend = "setuptools.build_meta"
 
 
 # Optional: include files from MANIFEST.in if you add one later
