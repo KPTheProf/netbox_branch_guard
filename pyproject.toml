@@ -3,7 +3,7 @@ name = "netbox-branch-guard"
 dynamic = ["version"]
 description = "Guards against writes to the main branch and enforces branch usage"
 authors = [
-	{name = "KPTheProf", email = ""},
+	{name = "KPTheProf"},
 ]
 license = "Apache-2.0"
 readme = "README.md"
