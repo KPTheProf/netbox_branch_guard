@@ -54,24 +54,5 @@ class NetboxBranchGuardConfig(PluginConfig):
     def ready(self):
         super().ready()
 
-        middleware_path = "netbox_branch_guard.middleware.NetboxBranchGuardMiddleware"
-
-        if middleware_path in settings.MIDDLEWARE:
-            return
-
-        ### This middleware needs to be inserted after Auth + Message middleware.
-        ###  As Message is already after Auth, then this should suffice.
-        # Find MessageMiddleware
-        try:
-            index = settings.MIDDLEWARE.index(
-                "django.contrib.messages.middleware.MessageMiddleware"
-            )
-        except ValueError:
-            # fallback: append at end
-            settings.MIDDLEWARE.append(middleware_path)
-            return
-
-        # Insert AFTER MessageMiddleware
-        settings.MIDDLEWARE.insert(index + 1, middleware_path)
 
 config = NetboxBranchGuardConfig
