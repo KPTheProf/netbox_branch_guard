@@ -5,7 +5,11 @@ It can also be setup to enforce branch ownership checks and control which branch
 It is used in conjunction with the Netbox Branching plugin [Netbox Branching](https://github.com/netboxlabs/netbox-branching).
 
 ## Compatibility
-ZZ
+
+| Release | Minimum NetBox Version | Maximum NetBox Version |
+|---------|------------------------|------------------------|
+| 0.1.32  | 4.6.0                  | 4.6.x                  |
+
 ## Requirements
 - NetBox 4.x
 - Netbox-Branching plugin for branch operations
