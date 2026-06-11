@@ -8,7 +8,7 @@ It is used in conjunction with the Netbox Branching plugin [Netbox Branching](ht
 
 | Release | Minimum NetBox Version | Maximum NetBox Version |
 |---------|------------------------|------------------------|
-| 0.1.32  | 4.6.0                  | 4.6.x                  |
+| 1.0.1   | 4.6.0                  | 4.6.x                  |
 
 ## Requirements
 - NetBox 4.x
