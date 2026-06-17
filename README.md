@@ -4,11 +4,18 @@ It can also be setup to enforce branch ownership checks and control which branch
 
 It is used in conjunction with the Netbox Branching plugin [Netbox Branching](https://github.com/netboxlabs/netbox-branching).
 
+>[!NOTE]
+> This module has only been tested in conjuction with Netbox Community Edition.
+> Please ensure that you fully test the behaviour of this module in a test environment before using in production. 
+
 ## Compatibility
 
 | Release | Minimum NetBox Version | Maximum NetBox Version |
 |---------|------------------------|------------------------|
+| 1.0.0   | 4.6.0                  | 4.6.x                  |
 | 1.0.1   | 4.6.0                  | 4.6.x                  |
+| 1.0.2   | 4.6.0                  | 4.6.x                  |
+| 1.0.3   | 4.6.0                  | 4.6.x                  |
 
 ## Requirements
 - NetBox 4.x
@@ -39,9 +46,10 @@ PLUGINS_CONFIG = {
       "enforce_ownership": False,       # (True) / False = Users can only write to branches they own.
       "logging": True,                  # True / (False) = Output detailed logging to the netbox log.
 
-      "group_branch_map": {             # Optional - Map user groups to their allowed branches
+      "group_branch_map": {             # Optional - Map user groups to their allowed branches. Wildcards are allowed.
           "Group 1": ["Branch 1", "Branch 2"],
           "Group 2": ["Branch 3"],
+          "Group AB *": ["Branch AB *"],
       },
     },
 }
@@ -79,9 +87,10 @@ PLUGINS_CONFIG = {
       "logging": True,                  # True / (False) = Output detailed logging to the netbox log.
       "log_level": "warning",           # Valid levels are ("debug"), "info", "success", "warning", "error"
 
-      "group_branch_map": {             # Optional - Map user groups to their allowed branches
+      "group_branch_map": {             # Optional - Map user groups to their allowed branches. Wildcards are allowed.
           "Group 1": ["Branch 1", "Branch 2"],
           "Group 2": ["Branch 3"],
+          "Group AB *": ["Branch AB *"],
       },
     },
 }
