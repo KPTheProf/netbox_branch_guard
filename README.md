@@ -16,6 +16,7 @@ It is used in conjunction with the Netbox Branching plugin [Netbox Branching](ht
 | 1.0.1   | 4.6.0                  | 4.6.x                  |
 | 1.0.2   | 4.6.0                  | 4.6.x                  |
 | 1.0.3   | 4.6.0                  | 4.6.x                  |
+| 1.0.4   | 4.6.0                  | 4.6.x                  |
 
 ## Requirements
 - NetBox 4.x
