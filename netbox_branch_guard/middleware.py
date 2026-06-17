@@ -75,8 +75,6 @@ class NetboxLogger:
             # Output the UI message using the higest log level value
             if (current_priority >= min_priority):
                 ui_msg_map.get(log_level, messages.error)(self.request, ui_msg)
-            else:
-                ui_msg_map.get(self.log_level, messages.error)(self.request, ui_msg)
 
         return
 
