@@ -4,20 +4,11 @@ It can also be setup to enforce branch ownership checks and control which branch
 
 It is used in conjunction with the Netbox Branching plugin [Netbox Branching](https://github.com/netboxlabs/netbox-branching).
 
+See the [compatibility matrix](COMPATIBILITY.md) for supported NetBox versions.
+
 >[!NOTE]
 > This module has only been tested in conjuction with Netbox Community Edition.
 > Please ensure that you fully test the behaviour of this module in a test environment before using in production. 
-
-## Compatibility
-
-| Release | Minimum NetBox Version | Maximum NetBox Version |
-|---------|------------------------|------------------------|
-| 1.0.0   | 4.6.0                  | 4.6.x                  |
-| 1.0.1   | 4.6.0                  | 4.6.x                  |
-| 1.0.2   | 4.6.0                  | 4.6.x                  |
-| 1.0.3   | 4.6.0                  | 4.6.x                  |
-| 1.0.4   | 4.6.0                  | 4.6.x                  |
-| 1.0.5   | 4.6.0                  | 4.6.x                  |
 
 ## Requirements
 - NetBox 4.x

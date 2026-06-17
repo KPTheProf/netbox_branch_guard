@@ -261,9 +261,9 @@ class NetboxBranchGuardMiddleware:
             if self.group_branch_map:
                 allowed_branch_patterns = []
 
-                for group_pattern, branch_pattern in self.group_branch_map.items():
+                for group_pattern, branch_patterns in self.group_branch_map.items():
                     if any(fnmatch.fnmatch(user_group, group_pattern) for user_group in user_groups):
-                        allowed_branch_patterns.extend(branch_pattern)
+                        allowed_branch_patterns.extend(branch_patterns)
 
                 if not allowed_branch_patterns:
                     log.warning(f"[BranchGuard BLOCK] You are not assigned to a branch group")
@@ -271,7 +271,7 @@ class NetboxBranchGuardMiddleware:
                     # Redirect the user back to the previous page
                     return redirect(request.META.get("HTTP_REFERER", "/"))
 
-                if not any(fnmatch.fnmatch(branch, pattern) for pattern in allowed_branch_patterns):
+                if not any(fnmatch.fnmatch(branch.name, pattern) for pattern in allowed_branch_patterns):
                     log.warning(f'[BranchGuard BLOCK] You cannot use branch "{branch.name}"')
                     log.warning(f"[BranchGuard BLOCK] Only: {', '.join('"' + b +'"' for b in allowed_branch_patterns)}")
 
