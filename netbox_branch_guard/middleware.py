@@ -63,6 +63,7 @@ class NetboxLogger:
                 ui_msg = re.sub(r"^\[BranchGuard[^\]]*\]\s*", "", ui_msg)
 
 
+            # Always log using the MIN level, not the original log_level
             ui_msg_map = {
                 "debug": messages.debug,
                 "info": messages.info,
@@ -71,7 +72,11 @@ class NetboxLogger:
                 "error": messages.error,
             }
 
-            ui_msg_map.get(log_level, messages.error)(self.request, ui_msg)
+            # Output the UI message using the higest log level value
+            if (current_priority >= min_priority):
+                ui_msg_map.get(log_level, messages.error)(self.request, ui_msg)
+            else:
+                ui_msg_map.get(self.log_level, messages.error)(self.request, ui_msg)
 
         return
 
@@ -292,7 +297,8 @@ class NetboxBranchGuardMiddleware:
 
             log.success(
                 f"[BranchGuard ALLOW] user={request.user}, "
-                f"{request.method}, {request.path}, branch={branch_id}"
+                f"{request.method}, {request.path}, branch={branch_id}",
+                f""
             )
 
 
