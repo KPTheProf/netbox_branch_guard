@@ -4,6 +4,8 @@ from django.contrib import messages
 from django.shortcuts import redirect
 import re
 import logging
+import fnmatch
+
 
 logger = logging.getLogger(__name__)
 
@@ -259,9 +261,9 @@ class NetboxBranchGuardMiddleware:
             if self.group_branch_map:
                 allowed_branches = []
 
-                for group, branches in self.group_branch_map.items():
-                    if group in user_groups:
-                        allowed_branches.extend(branches)
+                for group_pattern, branches in self.group_branch_map.items():
+                    if any(fnmatch.fnmatch(user_group, group_pattern) for user_group in user_groups):
+                        allowed_branch_patterns.extend(branches)
 
                 if not allowed_branches:
                     log.warning(f"[BranchGuard BLOCK] You are not assigned to a branch group")
@@ -269,7 +271,7 @@ class NetboxBranchGuardMiddleware:
                     # Redirect the user back to the previous page
                     return redirect(request.META.get("HTTP_REFERER", "/"))
 
-                if branch.name not in allowed_branches:
+                if not any(fnmatch.fnmatch(branch_name, pattern) for pattern in allowed_branch_patterns):
                     log.warning(f'[BranchGuard BLOCK] You cannot use branch "{branch.name}"')
                     log.warning(f"[BranchGuard BLOCK] Only: {', '.join('"' + b +'"' for b in allowed_branches)}")
 
