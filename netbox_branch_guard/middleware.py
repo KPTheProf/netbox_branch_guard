@@ -2,12 +2,70 @@ from django.http import JsonResponse
 from django.conf import settings
 from django.contrib import messages
 from django.shortcuts import redirect
+from django.urls import resolve, Resolver404
 import re
 import logging
 import fnmatch
+import json
+import io
 
 
 logger = logging.getLogger(__name__)
+
+
+def _is_field_changed(obj, field, submitted_value):
+    # Get current value from database object
+    attname = getattr(field, 'attname', field.name)
+    current_val = getattr(obj, attname, getattr(obj, field.name, None))
+    
+    # Check if field is m2m or current_val is a relation manager (e.g., tags)
+    is_m2m = hasattr(current_val, 'all') or getattr(field, 'many_to_many', False)
+    
+    if is_m2m:
+        if submitted_value is None or submitted_value == "" or submitted_value == []:
+            sub_list = []
+        elif isinstance(submitted_value, (list, tuple)):
+            sub_list = [str(v) for v in submitted_value if v is not None and v != ""]
+        else:
+            sub_list = [str(submitted_value)]
+            
+        if hasattr(current_val, 'all'):
+            curr_list = [str(pk) for pk in current_val.values_list('pk', flat=True)]
+        elif isinstance(current_val, (list, tuple)):
+            curr_list = [str(v) for v in current_val if v is not None and v != ""]
+        else:
+            curr_list = [str(current_val)] if current_val is not None else []
+            
+        return sorted(sub_list) != sorted(curr_list)
+
+    # If current_val is a relation, get its pk
+    if hasattr(current_val, 'pk'):
+        current_val = current_val.pk
+        
+    # Coerce/normalize submitted_value
+    # If it's a dict (nested serializer), extract 'id' or 'pk'
+    if isinstance(submitted_value, dict):
+        submitted_value = submitted_value.get('id', submitted_value.get('pk', submitted_value))
+    
+    # If it's a list/tuple (e.g. choices or multiselect), normalize it
+    if isinstance(submitted_value, (list, tuple)):
+        sub_list = sorted([str(v) for v in submitted_value])
+        if isinstance(current_val, (list, tuple)):
+            curr_list = sorted([str(v) for v in current_val])
+        else:
+            curr_list = [str(current_val)] if current_val is not None else []
+        return sub_list != curr_list
+
+    # Compare string representations to avoid type mismatch issues
+    # Also normalize None / empty string / False
+    def normalize(v):
+        if v is None or v == "" or v is False:
+            return ""
+        if v is True:
+            return "true"
+        return str(v).strip().lower()
+
+    return normalize(current_val) != normalize(submitted_value)
 
 WRITE_METHODS = {"POST", "PUT", "PATCH", "DELETE"}
 
@@ -55,7 +113,7 @@ class NetboxLogger:
 
 
         # --- UI Messages ---
-        if self.request is not None:
+        if self.request is not None and log_level != "debug":
             ui_msg = display or message
 
             # strip off the [BranchGuard.*] string on the display message
@@ -112,6 +170,8 @@ class NetboxBranchGuardMiddleware:
         self.logging = plugin_config.get("logging", False)
         self.log_level = plugin_config.get("log_level", "warning").lower()
         self.group_branch_map = plugin_config.get("group_branch_map", {})
+        self.excluded_models = {m.lower() for m in plugin_config.get("excluded_models", [])}
+        self.excluded_fields = {f.lower() for f in plugin_config.get("excluded_fields", [])}
 
         valid_levels = {"debug", "info", "success", "warning", "error"}
         self.log_level = self.log_level if self.log_level in valid_levels else "debug"
@@ -127,7 +187,9 @@ class NetboxBranchGuardMiddleware:
             f"enforce_ownership: {self.enforce_ownership}, "
             f"logging: {self.logging}, "
             f"log_level: {self.log_level}, "
-            f"group_branch_map: {self.group_branch_map} "
+            f"group_branch_map: {self.group_branch_map}, "
+            f"excluded_models: {self.excluded_models}, "
+            f"excluded_fields: {self.excluded_fields} "
         )
 
 
@@ -215,17 +277,196 @@ class NetboxBranchGuardMiddleware:
                     f"{request.method} {request.path} -> No Branch (UI/API) "
                 )
 
+                # Check if this write to main is exempt under excluded_models or excluded_fields
+                model = None
+                resolver_match = None
+                block_reasons = []
+                try:
+                    resolver_match = resolve(request.path_info)
+                except Exception as e:
+                    block_reasons.append(f"URL resolve failed: {e}")
+                    log.warning(f"[BranchGuard BLOCK] URL resolve failed: {e}")
+
+                if resolver_match:
+                    view_func = resolver_match.func
+                    view_class = getattr(view_func, 'view_class', getattr(view_func, 'cls', None))
+                    if view_class:
+                        queryset = getattr(view_class, 'queryset', None)
+                        if queryset is not None and hasattr(queryset, 'model'):
+                            model = queryset.model
+                        else:
+                            model = getattr(view_class, 'model', None)
+                else:
+                    block_reasons.append("Could not resolve path to a view")
+
+                # 1. Check if model itself is exempt
+                model_exempt = False
+                if model:
+                    model_label = model._meta.label_lower
+                    if model_label in self.excluded_models or model._meta.app_label == 'netbox_branching':
+                        model_exempt = True
+                else:
+                    block_reasons.append("No model resolved for path")
+
+                if model_exempt:
+                    return self.get_response(request)
+
+                # 2. Check if only excluded fields are modified
+                fields_exempt = False
+                if model:
+                    if self.excluded_fields:
+                        # Get submitted data
+                        submitted_data = {}
+                        if request.content_type == "application/json" or request.path_info.startswith("/api/"):
+                            try:
+                                body = request.body
+                                request._body = body
+                                request._stream = io.BytesIO(body)
+                                submitted_data = json.loads(body)
+                            except Exception as e:
+                                block_reasons.append(f"JSON body parse failed: {e}")
+                                log.warning(f"[BranchGuard BLOCK] JSON body parse failed: {e}")
+                        else:
+                            submitted_data = request.POST.dict()
+
+                        # Find existing objects being modified
+                        pks = []
+                        pk = resolver_match.kwargs.get("pk") if resolver_match else None
+                        if pk:
+                            pks = [pk]
+                        else:
+                            pk_list = submitted_data.get('pk') or submitted_data.get('id')
+                            if pk_list:
+                                if isinstance(pk_list, list):
+                                    pks = pk_list
+                                else:
+                                    pks = [pk_list]
+
+                        if pks:
+                            try:
+                                objs = list(model.objects.filter(pk__in=pks))
+                            except Exception as e:
+                                block_reasons.append(f"DB fetch failed: {e}")
+                                log.warning(f"[BranchGuard BLOCK] DB fetch failed: {e}")
+                                objs = []
+
+                            if objs:
+                                # Compare changes
+                                non_exempt_changes = False
+                                
+                                # Gather all fields (concrete and m2m)
+                                all_fields = {f.name: f for f in model._meta.fields}
+                                for m2m in model._meta.many_to_many:
+                                    all_fields[m2m.name] = m2m
+
+                                # Check each field in submitted data
+                                for field_name, val in submitted_data.items():
+                                    if field_name.startswith('cf_'):
+                                        cf_name = field_name[3:]
+                                        if field_name.lower() in self.excluded_fields or cf_name.lower() in self.excluded_fields or 'custom_fields' in self.excluded_fields:
+                                            continue
+                                        
+                                        for obj in objs:
+                                            current_cf_val = obj.custom_fields.get(cf_name) if hasattr(obj, 'custom_fields') and isinstance(obj.custom_fields, dict) else None
+                                            
+                                            def normalize_cf(v):
+                                                if v is None or v == "" or v is False:
+                                                    return ""
+                                                if v is True:
+                                                    return "true"
+                                                return str(v).strip().lower()
+                                                
+                                            if normalize_cf(current_cf_val) != normalize_cf(val):
+                                                non_exempt_changes = True
+                                                msg = f"Custom field '{cf_name}' changed (old: {current_cf_val}, new: {val})"
+                                                block_reasons.append(msg)
+                                                break
+                                        if non_exempt_changes:
+                                            break
+                                    else:
+                                        field = all_fields.get(field_name)
+                                        if not field:
+                                            # Might be using attname (e.g. tenant_id instead of tenant)
+                                            field = next((f for f in model._meta.fields if f.attname == field_name), None)
+
+                                        if field:
+                                            if field_name == 'custom_fields' and isinstance(val, dict):
+                                                # Custom fields in API
+                                                for obj in objs:
+                                                    current_cf = getattr(obj, 'custom_fields', {}) or {}
+                                                    if not isinstance(current_cf, dict):
+                                                        current_cf = {}
+                                                    
+                                                    for cf_key, cf_val in val.items():
+                                                        if cf_key.lower() in self.excluded_fields or f"cf_{cf_key}".lower() in self.excluded_fields or 'custom_fields' in self.excluded_fields:
+                                                            continue
+                                                        
+                                                        current_cf_val = current_cf.get(cf_key)
+                                                        
+                                                        def normalize_cf(v):
+                                                            if v is None or v == "" or v is False:
+                                                                return ""
+                                                            if v is True:
+                                                                return "true"
+                                                            return str(v).strip().lower()
+                                                            
+                                                        if normalize_cf(current_cf_val) != normalize_cf(cf_val):
+                                                            non_exempt_changes = True
+                                                            msg = f"Nested custom field '{cf_key}' changed (old: {current_cf_val}, new: {cf_val})"
+                                                            block_reasons.append(msg)
+                                                            break
+                                                    if non_exempt_changes:
+                                                        break
+                                                if non_exempt_changes:
+                                                    break
+                                            else:
+                                                # Standard database field or Many-to-Many field
+                                                if field.name.lower() in self.excluded_fields or getattr(field, 'attname', '').lower() in self.excluded_fields:
+                                                    continue
+                                                
+                                                for obj in objs:
+                                                    if _is_field_changed(obj, field, val):
+                                                        non_exempt_changes = True
+                                                        attname = getattr(field, 'attname', field.name)
+                                                        current_val = getattr(obj, attname, getattr(obj, field.name, None))
+                                                        if hasattr(current_val, 'pk'):
+                                                            current_val = current_val.pk
+                                                        msg = f"Field '{field.name}' changed (old: {current_val}, new: {val})"
+                                                        block_reasons.append(msg)
+                                                        break
+                                                if non_exempt_changes:
+                                                    break
+
+                                if not non_exempt_changes:
+                                    fields_exempt = True
+                            else:
+                                msg = f"No database objects found for IDs: {pks}"
+                                block_reasons.append(msg)
+                        else:
+                            msg = "No object IDs (pk) found in request (likely a creation request)"
+                            block_reasons.append(msg)
+                    else:
+                        msg = "No excluded fields configured"
+                        block_reasons.append(msg)
+
+                if fields_exempt:
+                    return self.get_response(request)
+
+                # Format blocking message with reasons
+                reason_str = "; ".join(block_reasons) if block_reasons else "restricted write operation"
+                display_msg = f"Writes to the Main branch are restricted ({reason_str})"
+
                 if request.path.startswith("/api/"):
                     # Block writes to Main by the /api/
                     log.warning(
-                        f"[BranchGuard BLOCK] Blocking writes to Main" 
-                        "Writes to the Main branch are restricted"
+                        f"[BranchGuard BLOCK] Blocking writes to Main. Reason: {reason_str}",
+                        display_msg
                     )
                 else:
                     # Block writes to Main in the UI
                     log.warning(
-                        f"[BranchGuard BLOCK] Blocking writes to Main",
-                        "Writes to the Main branch are restricted"
+                        f"[BranchGuard BLOCK] Blocking writes to Main. Reason: {reason_str}",
+                        display_msg
                     )
 
                 # Redirect the user back to the previous page
