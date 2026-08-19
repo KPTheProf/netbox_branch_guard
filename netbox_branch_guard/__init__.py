@@ -5,7 +5,7 @@ from importlib.metadata import version, PackageNotFoundError
 try:
     from ._version import __version__
 except ImportError:
-    _version__ = "0.0.dev0"
+    __version__ = "0.0.dev0"
 
 
 class NetboxBranchGuardConfig(PluginConfig):
@@ -47,6 +47,12 @@ class NetboxBranchGuardConfig(PluginConfig):
 
         # Map user groups to their allowed branches
         "group_branch_map": {},
+
+        # Entire models that are safe to modify directly on main
+        "excluded_models": [],
+
+        # Specific fields allowed to be updated on any object directly on main
+        "excluded_fields": [],
     }
 
 
