@@ -27,24 +27,47 @@ pip install netbox-branch-guard
 
 ```python
 PLUGINS = [
-    "netbox_branch_guard",
-    "netbox_branching",
+    'netbox_branch_guard',
+    'netbox_branching',
 ]
 
 PLUGINS_CONFIG = {
-    "netbox_branch_guard": {            # Default setting in (brackets)
-      "enabled": True,                  # (True) / False = plugin is enabled.
-      "api_bypass": True,               # (True) / False = API can write to Main, else it's blocked.
-      "superuser_bypass": True,         # (True) / False = Superuser can write to Main, else it's blocked.
-      "enforce_ownership": False,       # (True) / False = Users can only write to branches they own.
-      "logging": True,                  # True / (False) = Output detailed logging to the netbox log.
+    'netbox_branch_guard': {              # Default setting in (brackets)
+        'enabled': True,                  # (True) / False = plugin is enabled.
+        'api_bypass': True,               # (True) / False = API can write to Main, else it's blocked.
+        'superuser_bypass': True,         # (True) / False = Superuser can write to Main, else it's blocked.
+        'enforce_ownership': False,       # (True) / False = Users can only write to branches they own.
+        'logging': True,                  # True / (False) = Output detailed logging to the netbox log.
 
-      "group_branch_map": {             # Optional - Map user groups to their allowed branches. Wildcards are allowed.
-          "Group 1": ["Branch 1", "Branch 2"],
-          "Group 2": ["Branch 3"],
-          "Group AB *": ["Branch AB *"],
-      },
+        # Optional - Map user groups to their allowed branches. Wildcards are allowed.
+        'group_branch_map': {
+            'Group 1': ['Branch 1', 'Branch 2'],
+            'Group 2': ['Branch 3'],
+            'Group AB *': ['Branch AB *'],
+        },
+
+        # Optional - Entire models that are safe to modify directly on main
+        'excluded_models': [
+            'extras.tag',
+            'extras.journalentry',
+            'netbox_topology_views.models.IndividualOptions',
+        ],
+
+        # Optional - Specific fields allowed to be updated on any object directly on main
+        'excluded_fields': [
+            'description',
+            'status',
+            'comments',
+        ],
+
+       # Optional - Map views to models, where those views aren't exposed so that they can excluded by model type
+       'view_model_map': {
+           'netbox_topology_views.views.TopologyIndividualOptionsView':
+               'netbox_topology_views.models.IndividualOptions',
+       },
+
     },
+
 }
 ```
 
@@ -67,26 +90,49 @@ Create plugins.py to store the plugin's configuration.
 
 ```python
 PLUGINS = [
-    "netbox_branch_guard",
-    "netbox_branching",
+    'netbox_branch_guard',
+    'netbox_branching',
 ]
 
 PLUGINS_CONFIG = {
-    "netbox_branch_guard": {            # Default setting in (brackets)
-      "enabled": True,                  # (True) / False = plugin is enabled.
-      "api_bypass": True,               # (True) / False = API can write to Main, else it's blocked.
-      "superuser_bypass": True,         # (True) / False = Superuser can write to Main, else it's blocked.
-      "enforce_ownership": False,       # (True) / False = Users can only write to branches they own.
-      "logging": True,                  # True / (False) = Output detailed logging to the netbox log.
-      "log_level": "warning",           # Valid levels are ("debug"), "info", "success", "warning", "error"
+    'netbox_branch_guard': {              # Default setting in (brackets)
+        'enabled': True,                  # (True) / False = plugin is enabled.
+        'api_bypass': True,               # (True) / False = API can write to Main, else it's blocked.
+        'superuser_bypass': True,         # (True) / False = Superuser can write to Main, else it's blocked.
+        'enforce_ownership': False,       # (True) / False = Users can only write to branches they own.
+        'logging': True,                  # True / (False) = Output detailed logging to the netbox log.
 
-      "group_branch_map": {             # Optional - Map user groups to their allowed branches. Wildcards are allowed.
-          "Group 1": ["Branch 1", "Branch 2"],
-          "Group 2": ["Branch 3"],
-          "Group AB *": ["Branch AB *"],
-      },
+        # Optional - Map user groups to their allowed branches. Wildcards are allowed.
+        'group_branch_map': {
+            'Group 1': ['Branch 1', 'Branch 2'],
+            'Group 2': ['Branch 3'],
+            'Group AB *': ['Branch AB *'],
+        },
+
+        # Optional - Entire models that are safe to modify directly on main
+        'excluded_models': [
+            'extras.tag',
+            'extras.journalentry',
+            'netbox_topology_views.models.IndividualOptions',
+        ],
+
+        # Optional - Specific fields allowed to be updated on any object directly on main
+        'excluded_fields': [
+            'description',
+            'status',
+            'comments',
+        ],
+
+       # Optional - Map views to models, where those views aren't exposed so that they can excluded by model type
+       'view_model_map': {
+           'netbox_topology_views.views.TopologyIndividualOptionsView':
+               'netbox_topology_views.models.IndividualOptions',
+       },
+
     },
+
 }
+
 ```
 
 5. Build the NetBox image

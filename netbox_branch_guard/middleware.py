@@ -8,6 +8,7 @@ import logging
 import fnmatch
 import json
 import io
+import importlib
 
 
 logger = logging.getLogger(__name__)
@@ -172,6 +173,7 @@ class NetboxBranchGuardMiddleware:
         self.group_branch_map = plugin_config.get("group_branch_map", {})
         self.excluded_models = {m.lower() for m in plugin_config.get("excluded_models", [])}
         self.excluded_fields = {f.lower() for f in plugin_config.get("excluded_fields", [])}
+        self.view_model_map = plugin_config.get("view_model_map", {})
 
         valid_levels = {"debug", "info", "success", "warning", "error"}
         self.log_level = self.log_level if self.log_level in valid_levels else "debug"
@@ -189,7 +191,8 @@ class NetboxBranchGuardMiddleware:
             f"log_level: {self.log_level}, "
             f"group_branch_map: {self.group_branch_map}, "
             f"excluded_models: {self.excluded_models}, "
-            f"excluded_fields: {self.excluded_fields} "
+            f"excluded_fields: {self.excluded_fields}, "
+            f"view_model_map: {self.view_model_map} "
         )
 
 
@@ -296,14 +299,63 @@ class NetboxBranchGuardMiddleware:
                             model = queryset.model
                         else:
                             model = getattr(view_class, 'model', None)
+
+                    log.debug(
+                        f"[BranchGuard DEBUG] "
+                        f"resolver_match={resolver_match}, "
+                        f"view_func={view_func}, "
+                        f"view_class={view_class}, "
+                        f"queryset={queryset}, "
+                        f"model={model} "
+                    )
+
+                    # Initialize the variables to avoid errors when debugging and the view_model_map isn't defined
+                    mapped_model = None
+                    module_name = None
+                    module = None
+
+                    # If we can't determine the model, then see if there is a mapping in the view_model_map
+                    if model is None and view_class:
+                        view_name = (
+                            f"{view_class.__module__}."
+                            f"{view_class.__name__}"
+                        )
+
+                        mapped_model = self.view_model_map.get(view_name)
+
+                        if mapped_model:
+                            module_name, class_name = mapped_model.rsplit('.', 1)
+                            module = importlib.import_module(module_name)
+                            model = getattr(module, class_name)
+
+                        log.debug(
+                            f"[BranchGuard DEBUG] "
+                            f"view_name={view_name}, "
+                            f"mapped_model={mapped_model}, "
+                            f"module_name={module_name}, "
+                            f"module={module}, "
+                            f"model={model} "
+                        )
                 else:
                     block_reasons.append("Could not resolve path to a view")
+
 
                 # 1. Check if model itself is exempt
                 model_exempt = False
                 if model:
                     model_label = model._meta.label_lower
-                    if model_label in self.excluded_models or model._meta.app_label == 'netbox_branching':
+
+                    model_path = (
+                        f"{model.__module__}.{model.__name__}"
+                    ).lower()
+
+                    log.debug(
+                        f"[BranchGuard DEBUG] "
+                        f"model_label={model_label}, "
+                        f"model_path={model_path} "
+                    )
+
+                    if model_label in self.excluded_models or model_path in self.excluded_models or model._meta.app_label == 'netbox_branching':
                         model_exempt = True
                 else:
                     block_reasons.append("No model resolved for path")

@@ -53,6 +53,9 @@ class NetboxBranchGuardConfig(PluginConfig):
 
         # Specific fields allowed to be updated on any object directly on main
         "excluded_fields": [],
+
+        # Map views to models where the view isn't directly associated with a model
+        "view_model_map": {},
     }
 
 
